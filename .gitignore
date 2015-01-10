@@ -1,0 +1,6 @@
+.log
+.pid
+.seed
+dev
+public/libs/
+node_modules/

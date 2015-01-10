@@ -1,0 +1,14 @@
+{
+  "name": "youtube-party",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/james-storey/youtube-party.git"
+  },
+  "dependencies": {
+    "express": "~4.10.7",
+    "handlebars": "^2.0.0",
+    "hbs": "^2.8.0",
+    "underscore": "~1.7.0"
+  }
+}

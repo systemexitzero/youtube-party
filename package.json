@@ -6,6 +6,7 @@
     "url": "http://github.com/james-storey/youtube-party.git"
   },
   "dependencies": {
+    "body-parser": "^1.10.1",
     "express": "~4.10.7",
     "handlebars": "^2.0.0",
     "hbs": "^2.8.0",

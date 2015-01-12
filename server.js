@@ -2,6 +2,7 @@
 var express 	= require('express');
 var app 		= express();
 var hbs 		= require('hbs');
+var bodyParser	= require('body-parser');
 
 var port = process.env.PORT || 12221;
 
@@ -12,6 +13,8 @@ app.engine('hbs', require('hbs').__express);
 
 hbs.registerPartials('./public/views/partials/');
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 require('./app/routes')(app);
 
 app.listen(port);

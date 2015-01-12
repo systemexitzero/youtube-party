@@ -1,0 +1,12 @@
+.title
+{
+	text-align: center;
+}
+
+#playerDiv
+{
+    max-width: 640px; /* you have to have a size or this method doesn't work */
+    max-height: 390px;
+    margin-right: auto;
+    margin-left: auto;
+}

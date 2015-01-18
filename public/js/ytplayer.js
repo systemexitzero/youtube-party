@@ -23,29 +23,25 @@ var setupEvents = function () {
         var json = evalJSON(e.data);
         if(json.videoId !== lastState.videoId) {
             synced = false;
-            player.cueVideoFromId(json.videoId);
+            player.cueVideoFromId(json.videoId, json.time);
             lastState.videoId = json.videoId;
         }
         if(json.pState !== lastState.pState) {
+            synced = false;
             if(json.pState === 1) {
-                synced = false;
                 player.playVideo();
                 lastState.pState = json.pState;
             }
             else if (json.pState === 2) {
-                synced = false;
                 player.pauseVideo();
                 lastState.pState = json.pState;
-            }   
+            }
         }
         // time handled in state change
         lastState.time = json.time;
 
     });
 }();
-
-
-
 
 
 var getVideoId = function () {
@@ -55,7 +51,7 @@ var getVideoId = function () {
 var onYouTubeIframeAPIReady = function () {
     // get current server state
     var req = makeHttpRequest("GET", "/state");
-    
+
     req.onload = function () {
         if(req.readyState === 4 && req.status === 200) {
             //console.log("data received: " + req.responseText);
@@ -85,22 +81,21 @@ var onPlayerReady = function (event) {
     player.mute();
 
     //console.log(lastState.pState);
-    if(lastState.pState === 1) {
+    if(lastState.pState === YT.PlayerState.PLAYING) {
         player.seekTo(lastState.time, true);
         synced = true;
     }
-    else if (lastState.pState === -1 || lastState.pState === 5) {
+    else if (lastState.pState === -1 ||
+        lastState.pState === YT.PlayerState.CUED ||
+        lastState.pState === YT.PlayerState.ENDED) {
         synced = true;
     }
 }
 
 var onPlayerStateChange = function(event) {
-    // find differences
-
-
-    if((event.data === 1 || event.data === 2))
+    if((event.data === YT.PlayerState.PLAYING ||
+        event.data === YT.PlayerState.PAUSED))
     {
-        //console.log("state: " + event.data +" synced: " + synced + " time: " + player.getCurrentTime());
         if(synced === true) {
             // synced clients can send status changes
             var diffs = {};
@@ -109,7 +104,7 @@ var onPlayerStateChange = function(event) {
             diffs.time = player.getCurrentTime();
 
             // save created state
-            lastState = diffs; 
+            lastState = diffs;
 
             // sync new state
             var req = makeHttpRequest("POST", "/state");
@@ -119,16 +114,12 @@ var onPlayerStateChange = function(event) {
             req.setRequestHeader("Connection", "close");
             req.send(diffstr);
         }
-        else if(event.data === 1 && 
-            Math.abs(player.getCurrentTime() - lastState.time) > 1.0) {
-            //console.log("seek to server state");
+        else if(event.data === YT.PlayerState.PLAYING &&
+            Math.abs(player.getCurrentTime() - lastState.time) > 0.3) {
             player.seekTo(lastState.time, true);
             synced = true;
         }
-        else {
-            synced = true;
-        }
-    }   
+    }
 }
 
 

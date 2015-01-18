@@ -1,4 +1,6 @@
 var _		= require('underscore');
+var events  = require('events');
+//var timeout = require('connect-timeout');
 
 var serverState = {
 	"videoId": 'yhNZDl4-nck',
@@ -7,6 +9,14 @@ var serverState = {
 };
 
 // utils ==========
+var eventEmitter = new events.EventEmitter();
+var eventClients = {};
+
+var getNewClientId = function () {
+	var id = 0;
+	return (function () { id += 1; return id; })
+}();
+
 var constructSSE = function (res, id, data) {
 	// write to the "stream"
 	res.write("event: sync\n");
@@ -32,6 +42,8 @@ module.exports = function (app) {
 		console.log(" time: " + resState.time);
 		serverState.time = resState.time;
 
+		eventEmitter.emit('notifyClients');
+
 		res.set({
   			'Content-Type': 'text/plain',
   			'Content-Length': "OK".length
@@ -41,12 +53,13 @@ module.exports = function (app) {
 
 	app.get("/state", function (req, res) {
 		// route to ask for server state
-		console.log("serve state info");
 		res.status(200).json(serverState);
 
 	});
 
 	app.get("/events", function (req, res) {
+		var id = getNewClientId();
+		console.log("new EventClient: " + id);
 		res.status(200);
 		res.set({
 			'Content-Type': 'text/event-stream',
@@ -54,14 +67,17 @@ module.exports = function (app) {
 			'Connection': 'keep-alive'
 		});
 
-		var id = (new Date()).toLocaleTimeString();
-
-		// Sends a SSE every 5 seconds on a single connection.
-		setInterval(function() {
+		var notify = function () {
+			console.log("notify sync event: " + id);
 			constructSSE(res, id, JSON.stringify(getServerState()));
-		}, 1000);
+		}
 
+		eventEmitter.on('notifyClients', notify);
 		constructSSE(res, id, JSON.stringify(getServerState()));
+
+		req.on('close', function () {
+			eventEmitter.removeListener('notifyClients', notify);
+		})
 	});
 
 	app.get("/*", function (req, res) {

@@ -9,34 +9,44 @@ var player;
 var lastState = {};
 var synced = false;
 
+var evtSource;
+
 //listen for server events
-var evtSource = new EventSource("/events");
-evtSource.addEventListener("sync", function (e) {
-    //console.log(e.data);
-    if(player === undefined) { return; }
-    var json = evalJSON(e.data);
-    if(json.videoId !== lastState.videoId) {
-        synced = false;
-        player.cueVideoFromId(json.videoId);
-        lastState.videoId = json.videoId;
-    }
-    if(json.pState !== lastState.pState) {
-        if(json.pState === 1) {
+var setupEvents = function () {
+    var eventListenerId = 0;
+
+    evtSource = new EventSource("/events");
+    evtSource.addEventListener("sync", function (e) {
+        //console.log(e.data);
+        if(player === undefined) { return; }
+        eventListenerId = parseInt(e.id);
+        var json = evalJSON(e.data);
+        if(json.videoId !== lastState.videoId) {
             synced = false;
-            player.playVideo();
-            lastState.pState = json.pState;
+            player.cueVideoFromId(json.videoId);
+            lastState.videoId = json.videoId;
         }
-        else if (json.pState === 2) {
-            synced = false;
-            player.pauseVideo();
-            lastState.pState = json.pState;
-        }   
-    }
+        if(json.pState !== lastState.pState) {
+            if(json.pState === 1) {
+                synced = false;
+                player.playVideo();
+                lastState.pState = json.pState;
+            }
+            else if (json.pState === 2) {
+                synced = false;
+                player.pauseVideo();
+                lastState.pState = json.pState;
+            }   
+        }
+        // time handled in state change
+        lastState.time = json.time;
 
-    // time handled in state change
-    lastState.time = json.time;
+    });
+}();
 
-});
+
+
+
 
 var getVideoId = function () {
     return getQueryVariable("v", player.getVideoUrl());

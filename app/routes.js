@@ -27,7 +27,7 @@ var constructSSE = function (res, id, data) {
 var getServerState = function () { return serverState; }
 
 module.exports = function (app) {
-	
+
 
 	// routes =======
 	app.post("/state", function (req, res) {
@@ -38,7 +38,7 @@ module.exports = function (app) {
 
 		console.log(" pState: " + resState.pState);
 		serverState.pState = resState.pState;
-		
+
 		console.log(" time: " + resState.time);
 		serverState.time = resState.time;
 
@@ -78,6 +78,15 @@ module.exports = function (app) {
 		req.on('close', function () {
 			eventEmitter.removeListener('notifyClients', notify);
 		})
+	});
+
+	app.post("/search", function (req, res) {
+		var query = req.body;
+		serverState.videoId = query;
+		serverState.pState = 2;
+		serverState.time = 0;
+		eventEmitter.emit('notifyClients');
+		res.status(200).send(query.value);
 	});
 
 	app.get("/*", function (req, res) {

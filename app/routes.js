@@ -82,7 +82,7 @@ module.exports = function (app) {
 
 	app.post("/search", function (req, res) {
 		var query = req.body;
-		serverState.videoId = query;
+		serverState.videoId = query.value;
 		serverState.pState = 2;
 		serverState.time = 0;
 		eventEmitter.emit('notifyClients');

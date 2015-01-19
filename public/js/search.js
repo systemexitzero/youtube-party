@@ -1,17 +1,26 @@
 var submitSearch = function () {
     var json = {};
+    json.value = "";
     var searchBox = document.getElementById("searchBox");
-    var passin = getQueryVariable(searchBox.value);
-    if(passin === false) {
-        json.value = searchBox.value;
+    //if url
+    // @stephenhay valid url regex from https://mathiasbynens.be/demo/url-regex
+    if(/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i.test(searchBox.value)) {
+        var vId = getQueryVariable("v", searchBox.value);
+        if(!vId){
+            //short url
+            vId = searchBox.value.split("http://youtu.be/")[1];
+        }
+        json.value = vId;
     }
     else {
-        json.value = passin;
+        // just the id
+        if(/\s+|\//.test(searchBox.value) === false) {
+            json.value = searchBox.value;
+        }
     }
-
+    console.log(json.value);
     searchBox.value = "";
 
-    console.log(json);
     var jsonstr = JSON.stringify(json);
     var xhr = makeHttpRequest("POST", "/search");
     xhr.setRequestHeader("Content-type","application/json");

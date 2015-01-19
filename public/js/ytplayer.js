@@ -23,7 +23,7 @@ var setupEvents = function () {
         var json = evalJSON(e.data);
         if(json.videoId !== lastState.videoId) {
             synced = false;
-            player.cueVideoFromId(json.videoId, json.time);
+            player.cueVideoById(json.videoId, json.time);
             lastState.videoId = json.videoId;
         }
         if(json.pState !== lastState.pState) {

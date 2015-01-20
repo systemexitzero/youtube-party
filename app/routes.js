@@ -27,8 +27,6 @@ var constructSSE = function (res, id, data) {
 var getServerState = function () { return serverState; }
 
 module.exports = function (app) {
-
-
 	// routes =======
 	app.post("/state", function (req, res) {
 		// set server state as indicated by client
@@ -58,8 +56,9 @@ module.exports = function (app) {
 	});
 
 	app.get("/events", function (req, res) {
-		var id = getNewClientId();
+		var id = req.socket._handle.fd;
 		console.log("new EventClient: " + id);
+		eventClients[id] = req.socket.remoteAddress;
 		res.status(200);
 		res.set({
 			'Content-Type': 'text/event-stream',
@@ -76,6 +75,8 @@ module.exports = function (app) {
 		constructSSE(res, id, JSON.stringify(getServerState()));
 
 		req.on('close', function () {
+			delete eventClients[id];
+			console.log("remove client: " + id);
 			eventEmitter.removeListener('notifyClients', notify);
 		})
 	});

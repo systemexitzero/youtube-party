@@ -8,13 +8,14 @@
 			<div id=player>player</div>
 		</div>
 		<br>
-		<div>
+		<div class="container">
 			<form action="" method="post" onsubmit="return submitSearch();">
-				<input type=text name=ytURL id="searchBox">
+				<input type=url name=ytURL id="searchBox">
 				<input type=submit value="Submit">
 			</form>
 		</div>
 		<script type="text/javascript" src="../js/ytplayer.js"></script>
 	</div>
+	{{> clientList }}
 </body>
 </html>

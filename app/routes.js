@@ -12,19 +12,29 @@ var serverState = {
 var eventEmitter = new events.EventEmitter();
 var eventClients = {};
 
-var getNewClientId = function () {
-	var id = 0;
-	return (function () { id += 1; return id; })
-}();
-
 var constructSSE = function (res, id, data) {
-	// write to the "stream"
 	res.write("event: sync\n");
 	res.write("id: " + id + "\n");
 	res.write("data:" + data + "\n\n");
 };
 
-var getServerState = function () { return serverState; }
+var clone = function (obj) {
+	//TODO(james): expand this to do a full deep copy
+	var c = {};
+	for(var k in obj) {
+		c[k] = obj[k];
+	}
+	return c;
+};
+
+var getServerState = function () {
+	var out = clone(serverState);
+	out.clients = [];
+	for(var k in eventClients) {
+		out.clients.push(eventClients[k]);
+	}
+	return out;
+}
 
 module.exports = function (app) {
 	// routes =======
@@ -78,7 +88,10 @@ module.exports = function (app) {
 			delete eventClients[id];
 			console.log("remove client: " + id);
 			eventEmitter.removeListener('notifyClients', notify);
-		})
+		});
+
+		//notify clients of new connection
+		eventEmitter.emit('notifyClients');
 	});
 
 	app.post("/search", function (req, res) {

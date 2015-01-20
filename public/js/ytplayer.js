@@ -17,7 +17,7 @@ var setupEvents = function () {
 
     evtSource = new EventSource("/events");
     evtSource.addEventListener("sync", function (e) {
-        //console.log(e.data);
+        console.log(e.data);
         if(player === undefined) { return; }
         eventListenerId = parseInt(e.id);
         var json = evalJSON(e.data);

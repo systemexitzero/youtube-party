@@ -19,7 +19,7 @@ var constructSSE = function (res, id, data) {
 };
 
 var clone = function (obj) {
-	//TODO(james): expand this to do a full deep copy
+	//TODO(james): expand this to do a full deep copy?
 	var c = {};
 	for(var k in obj) {
 		c[k] = obj[k];

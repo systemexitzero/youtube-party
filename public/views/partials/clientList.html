@@ -1,5 +1,9 @@
-<div class="container">
-    <ul id="clientList">
-        
+<div class="container client-list">
+    <input type="checkbox" />
+    <label data-collapsed="Open Client List" data-expanded="Close Client List"></label>
+    <ul id="clientList" class="client-list-content">
+        {{#each clients}}
+          <li>{{this}}</li>
+        {{/each}}
     </ul>
 </div>

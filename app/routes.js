@@ -104,7 +104,10 @@ module.exports = function (app) {
 	});
 
 	app.get("/*", function (req, res) {
-		var data = {};
+		var state = getServerState();
+		var data = {
+			clients : state.clients
+		};
 		res.render("index.hbs", data);
 	});
 }

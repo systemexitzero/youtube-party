@@ -1,6 +1,6 @@
 var _		= require('underscore');
 var events  = require('events');
-//var timeout = require('connect-timeout');
+var url 	= require('url');
 
 var serverState = {
 	"videoId": 'yhNZDl4-nck',
@@ -80,6 +80,13 @@ module.exports = function (app) {
 		}
 		console.log("new EventClient: " + id);
 		eventClients[id] = req.socket.remoteAddress;
+
+		urlParts = url.parse(req.url, true);
+		var query = urlParts.query;
+		if(query.hasOwnProperty("name")) {
+			eventClients[id] = query.name;
+		}
+
 		res.status(200);
 		res.set({
 			'Content-Type': 'text/event-stream',

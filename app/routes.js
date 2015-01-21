@@ -12,6 +12,8 @@ var serverState = {
 var eventEmitter = new events.EventEmitter();
 var eventClients = {};
 
+var isWin = process.platform === 'win32';
+
 var constructSSE = function (res, id, data) {
 	res.write("event: sync\n");
 	res.write("id: " + id + "\n");
@@ -66,7 +68,16 @@ module.exports = function (app) {
 	});
 
 	app.get("/events", function (req, res) {
-		var id = req.socket._handle.fd;
+		var id = '';
+		if(isWin) {
+			id = 1;
+			while(id in eventClients) {
+				id = Math.floor(Math.random() * 1000);
+			}
+		}
+		else {
+			id = req.socket._handle.fd;
+		}
 		console.log("new EventClient: " + id);
 		eventClients[id] = req.socket.remoteAddress;
 		res.status(200);

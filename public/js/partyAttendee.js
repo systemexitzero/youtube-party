@@ -16,9 +16,6 @@ var PartyAttendee = function () {
         var text = document.createElement("INPUT");
         text.type = "text";
         text.id = "nameText";
-        text.cols = 45;
-        text.rows = 1;
-        text.maxlength = 45;
         text.name = "tBox";
         var sbmt = document.createElement("INPUT");
         sbmt.type = "submit";
@@ -31,17 +28,23 @@ var PartyAttendee = function () {
     var confirmName = function () {
         var newNameElem = document.getElementById("nameText");
         var nameElem = document.getElementById('changeName');
+        // TODO(james): name validation
+        var newName = newNameElem.value;
+        name = newName;
+
         // set page to regular name view
-        nameElem.innerHTML = "<span id='userName'>" + newNameElem.value + "</span>";
+        nameElem.innerHTML = "<span id='userName'>" + newName + "</span>";
         userElem.onclick = PartyAttendee.changeName;
         // send new name back to the server
+        evtSource.close();
+        setupEvents();
     }
 
     //listen for server events
     var setupEvents = function () {
         var eventListenerId = 0;
         clientList = document.getElementById('clientList');
-        evtSource = new EventSource("/events");
+        evtSource = new EventSource("/events?name=" + name);
         evtSource.addEventListener("sync", function (e) {
             console.log(e.data);
             if(player === undefined) { return; }
@@ -125,7 +128,7 @@ var PartyAttendee = function () {
         return getQueryVariable("v", player.getVideoUrl());
     };
 
-    that.getName = function () { return name; }
+    that.getName = function () { return name; };
     that.changeName = changeName;
     that.confirmName = confirmName;
     that.onPlayerReady = onPlayerReady;

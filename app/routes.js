@@ -79,7 +79,7 @@ module.exports = function (app) {
 			id = req.socket._handle.fd;
 		}
 		console.log("new EventClient: " + id);
-		eventClients[id] = req.socket.remoteAddress;
+		eventClients[id] = "req";
 
 		urlParts = url.parse(req.url, true);
 		var query = urlParts.query;

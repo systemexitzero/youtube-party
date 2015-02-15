@@ -1,11 +1,41 @@
 var PartyAttendee = function () {
     var that = {};
 
+    var name = "Anon";
+
     var player = {};
     var lastState = {};
     var synced = false;
     var evtSource;
     var clientList = {};
+
+    var changeName = function () {
+        var nameElem = document.getElementById('changeName');
+        nameElem.innerHTML = "";
+        // set to change mode
+        var text = document.createElement("INPUT");
+        text.type = "text";
+        text.id = "nameText";
+        text.cols = 45;
+        text.rows = 1;
+        text.maxlength = 45;
+        text.name = "tBox";
+        var sbmt = document.createElement("INPUT");
+        sbmt.type = "submit";
+        sbmt.value = "Submit";
+        sbmt.onclick = confirmName;
+        nameElem.appendChild(text);
+        nameElem.appendChild(sbmt);
+    }
+
+    var confirmName = function () {
+        var newNameElem = document.getElementById("nameText");
+        var nameElem = document.getElementById('changeName');
+        // set page to regular name view
+        nameElem.innerHTML = "<span id='userName'>" + newNameElem.value + "</span>";
+        userElem.onclick = PartyAttendee.changeName;
+        // send new name back to the server
+    }
 
     //listen for server events
     var setupEvents = function () {
@@ -95,6 +125,9 @@ var PartyAttendee = function () {
         return getQueryVariable("v", player.getVideoUrl());
     };
 
+    that.getName = function () { return name; }
+    that.changeName = changeName;
+    that.confirmName = confirmName;
     that.onPlayerReady = onPlayerReady;
     that.onPlayerStateChange = onPlayerStateChange;
     //TODO(james): figure out what is going on with object references here

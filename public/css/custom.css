@@ -10,3 +10,18 @@
     margin-right: auto;
     margin-left: auto;
 }
+
+.userstatus{
+	float: right;
+	font-size: .9em;
+	color:#888;
+}
+
+.userstatus p {
+	font-size: .9em;
+	color:#888;
+}
+
+.topbar{
+	margin-bottom: 0px;
+}

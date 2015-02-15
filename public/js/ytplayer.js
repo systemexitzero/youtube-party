@@ -34,3 +34,8 @@ var onYouTubeIframeAPIReady = function () {
     }
     req.send();
 };
+
+// TODO(james): don't leave this here
+var userElem = document.getElementById('userName');
+userElem.innerHTML = PartyAttendee.getName();
+userElem.onclick = PartyAttendee.changeName;
